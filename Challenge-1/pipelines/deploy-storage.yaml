@@ -1,0 +1,79 @@
+trigger:
+- none
+
+parameters:
+- name: EnviornmentName
+  displayName: Which enviornment you want to deploy to?
+  type: string
+  values:
+    - "Dev"
+    - "Test"
+    - "Prod"
+- name: StorageAccountName
+  displayName: What would be the Storage Account name
+  type: string    
+
+variables:
+  - name: pathToScripts
+    value: $(Build.SourcesDirectory)/Challenge-1/scripts
+  - name: serviceConnectionName
+    ${{ if eq(parameters.EnviornmentName, 'Dev') }}:
+      value: 'StorageAccount-Dev-Provision'
+    ${{ elseif eq(parameters.EnviornmentName, 'Test') }}:
+      value: 'StorageAccount-Test-Provision'
+    ${{ elseif eq(parameters.EnviornmentName, 'Prod') }}:
+      value: 'StorageAccount-Prod-Provision'
+  - name: ResourceGroupName
+    ${{ if eq(parameters.EnviornmentName, 'Dev') }}:
+      value: 'dev-resourcegroup'
+    ${{ elseif eq(parameters.EnviornmentName, 'Test') }}:
+      value: 'test-resourcegroup'
+    ${{ elseif eq(parameters.EnviornmentName, 'Prod') }}:
+      value: 'prod-resourcegroup'
+  - name: Subscription
+    ${{ if eq(parameters.EnviornmentName, 'Dev') }}:
+      value: 'dev-subscription-id'
+    ${{ elseif eq(parameters.EnviornmentName, 'Test') }}:
+      value: 'test-subscription-id'
+    ${{ elseif eq(parameters.v, 'Prod') }}:
+      value: 'prod-subscription-id'                
+  - name: TagBusinessOwner
+    ${{ if eq(parameters.EnviornmentName, 'Dev') }}:
+      value: 'department-a'
+    ${{ elseif eq(parameters.EnviornmentName, 'Test') }}:
+      value: 'department-a'
+    ${{ elseif eq(parameters.EnviornmentName, 'Prod') }}:
+      value: 'department-a' 
+  - name: TagTechnicalOwner
+    ${{ if eq(parameters.EnviornmentName, 'Dev') }}:
+      value: 'dl-a'
+    ${{ elseif eq(parameters.EnviornmentName, 'Test') }}:
+      value: 'dl-a'
+    ${{ elseif eq(parameters.EnviornmentName, 'Prod') }}:
+      value: 'dl-a'       
+              
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Deploy
+    displayName: Initializing Deployment
+    jobs:
+      - job: ARM
+        displayName: Deployig ARM template
+        steps:
+          - task: AzurePowerShell@5
+            displayName: Subscription resource deployment script
+            inputs:
+              azureSubscription: '${{variables.serviceConnectionName}}'
+              ScriptType: 'FilePath'
+              ScriptPath: '$(pathToScripts)/New-StorageAccount.ps1'
+              azurePowerShellVersion: 'LatestVersion'
+              ScriptArguments: 
+                -SaName ${{parameters.StorageAccountName}}
+                -ResourceGroupName ${{variables.ResourceGroupName}}
+                -SubscriptionID ${{variables.Subscription}}
+                -TagBusinessOwner ${{variables.TagBusinessOwner}}
+                -TagTechnicalOwner ${{variables.TagTechnicalOwner}}
+                -PathToTemplate "$(Build.SourcesDirectory)/Challenge-1/templates"
