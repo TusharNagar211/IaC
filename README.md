@@ -14,7 +14,7 @@ This template allows you to create a new storage account in Azure
 
 ### Virtual Network
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTusharNagar211%2FIaC%2Frefs%2Fheads%2Fmainquick-start-templates%2F%2Fvnet-two-subnets.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTusharNagar211%2FIaC%2Frefs%2Fheads%2Fmain%2Fquick-start-templates%2Fvnet-two-subnets.json)
 
 This template allows you to create a VNET with two subnets in Azure
 
